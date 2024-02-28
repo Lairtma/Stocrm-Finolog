@@ -7,7 +7,7 @@ def filling_order(type, contr_var, deal_id):
     new_order = fin.create_order(type)  # создаем новый заказ в finolog
     get_info_last_order = fin.get_last_order()  # получаем данные последнего созданного заказа
     last_order_id = get_info_last_order["id"]  # получаем id последнего созданного заказа из данных
-    fin.change_order_by_id(last_order_id, seller_id=contr_var, description = deal_description)  # изменяем заказ по id добавляя нужные параметры
+    fin.change_order_by_id(last_order_id, buyer_id=contr_var, description = deal_description)  # изменяем заказ по id добавляя нужные параметры
 
 def comparing_deals(sto_id):
     orders_list = fin.get_all_orders()
@@ -41,5 +41,5 @@ def order_creation_with_contr_data(id,type):
 sto = Stocrm("13581_bf2b8cec383601bad6765d4b61240dbd", "v8-centr")
 fin = Finolog("hepV7NAnFgAshnDd90adec7e4d95088359e869f3e4f89e08riNSzPykUqS6fKWN", "43768")
 
-#(order_creation_with_contr_data(10715, "out"))
+(order_creation_with_contr_data(10715, "out"))
 print(comparing_deals(10715))
