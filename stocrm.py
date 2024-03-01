@@ -35,6 +35,21 @@ class Stocrm:
         json_acceptable_string = req.text.replace("'", "\"")
         lst = json.loads(json_acceptable_string)
         return lst
+    def get_works_from_deal_by_id(self, id):
+        url = f"https://{self.domain}.stocrm.ru/api/external/v1/work/get_filtered?SID={self.api_token}&FILTER[OFFER_ID]={id}"
+        req = requests.get(url)
+        json_acceptable_string = req.text.replace("'", "\"")
+        lst = json.loads(json_acceptable_string)
+        return lst
+
+    def get_products_from_deal_by_id(self, id):
+        url = f"https://{self.domain}.stocrm.ru/api/external/v1/products/get_filtered_orders?SID={self.api_token}&FILTER[OFFER_ID]={id}"
+        req = requests.get(url)
+        json_acceptable_string = req.text.replace("'", "\"")
+        lst = json.loads(json_acceptable_string)
+        return lst
+
+
 
 
 sto = Stocrm("13581_bf2b8cec383601bad6765d4b61240dbd", "v8-centr")
@@ -75,7 +90,7 @@ while True:    # основной цикл для повторения раз в
                     elif leed["OFFER_CUSTOMER_NAME"] == "V8.CENTER Кузовной":
                         project = 353644
                     else:
-                        project = 345944
+                        project = 345944 # 
                     res.append("8" + str(leed["CONTACT_PROPERTY_PHONE"][1::]))
                 except Exception as e:
                     res.append("Error")
@@ -409,4 +424,5 @@ while True:    # основной цикл для повторения раз в
         for i in used_id:
             fw.write(str(i) + "\n")
     while time.time() - start_time < 300:   # пауза в 5 минут - время работы
-        time.sleep(10)"""
+        time.sleep(10)
+"""""
