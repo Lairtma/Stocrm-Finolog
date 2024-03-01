@@ -359,7 +359,7 @@ while True:    # основной цикл для повторения раз в
                     if len(date[0]) != 1:
                         res = fin.split_transaction_by_id(i["id"], date[0])
                     else:
-                        res = fin.change_transaction_by_id(i[id], description=date[0][0]["description"], category_id=866958, project_id=predoplata[2][0][2])
+                        res = fin.change_transaction_by_id(i["id"], description=date[0][0]["description"], category_id=866958, project_id=predoplata[2][0][2])
                 elif i["value"] == polnaya[3]:
                     if len(date[1]) != 1:
                         res = fin.split_transaction_by_id(i["id"], date[1])
