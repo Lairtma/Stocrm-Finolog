@@ -55,7 +55,7 @@ class Stocrm:
 sto = Stocrm("13581_bf2b8cec383601bad6765d4b61240dbd", "v8-centr")
 fin = Finolog("hepV7NAnFgAshnDd90adec7e4d95088359e869f3e4f89e08riNSzPykUqS6fKWN", "43768")
 used_id = []
-
+"""
 with open("used_id.txt") as fr:
     used_id = fr.readlines()
     for i in range(len(used_id)):
@@ -90,7 +90,7 @@ while True:    # основной цикл для повторения раз в
                     elif leed["OFFER_CUSTOMER_NAME"] == "V8.CENTER Кузовной":
                         project = 353644
                     else:
-                        project = 345944
+                        project = 345944 # 
                     res.append("8" + str(leed["CONTACT_PROPERTY_PHONE"][1::]))
                 except Exception as e:
                     res.append("Error")
@@ -425,3 +425,4 @@ while True:    # основной цикл для повторения раз в
             fw.write(str(i) + "\n")
     while time.time() - start_time < 300:   # пауза в 5 минут - время работы
         time.sleep(10)
+"""""

@@ -264,6 +264,19 @@ class Finolog:
         lst = json.loads(json_acceptable_string)
         return lst
 
+    def change_package_item_by_id(self, package_id, package_item_id, count, price):
+        url = f"https://api.finolog.ru/v1/biz/{self.biz_id}/orders/package/{package_id}/item/{package_item_id}"
+        params = {
+            "api_token": self.api_token,
+            "count": count,
+            "price": price,
+            "item_id": package_item_id
+        }
+        req = requests.put(url, params=params)
+        json_acceptable_string = req.text.replace("'", "\"")
+        lst = json.loads(json_acceptable_string)
+        return lst
+
 
 if __name__ == "__main__":
     fin = Finolog("hepV7NAnFgAshnDd90adec7e4d95088359e869f3e4f89e08riNSzPykUqS6fKWN", "43768")
