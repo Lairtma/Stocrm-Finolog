@@ -35,12 +35,27 @@ class Stocrm:
         json_acceptable_string = req.text.replace("'", "\"")
         lst = json.loads(json_acceptable_string)
         return lst
+    def get_works_from_deal_by_id(self, id):
+        url = f"https://{self.domain}.stocrm.ru/api/external/v1/work/get_filtered?SID={self.api_token}&FILTER[OFFER_ID]={id}"
+        req = requests.get(url)
+        json_acceptable_string = req.text.replace("'", "\"")
+        lst = json.loads(json_acceptable_string)
+        return lst
+
+    def get_products_from_deal_by_id(self, id):
+        url = f"https://{self.domain}.stocrm.ru/api/external/v1/products/get_filtered_orders?SID={self.api_token}&FILTER[OFFER_ID]={id}"
+        req = requests.get(url)
+        json_acceptable_string = req.text.replace("'", "\"")
+        lst = json.loads(json_acceptable_string)
+        return lst
+
+
 
 
 sto = Stocrm("13581_bf2b8cec383601bad6765d4b61240dbd", "v8-centr")
 fin = Finolog("hepV7NAnFgAshnDd90adec7e4d95088359e869f3e4f89e08riNSzPykUqS6fKWN", "43768")
 used_id = []
-"""
+
 with open("used_id.txt") as fr:
     used_id = fr.readlines()
     for i in range(len(used_id)):
@@ -409,4 +424,4 @@ while True:    # основной цикл для повторения раз в
         for i in used_id:
             fw.write(str(i) + "\n")
     while time.time() - start_time < 300:   # пауза в 5 минут - время работы
-        time.sleep(10)"""
+        time.sleep(10)

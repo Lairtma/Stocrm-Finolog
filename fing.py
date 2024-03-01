@@ -221,6 +221,48 @@ class Finolog:
         lst = json.loads(json_acceptable_string)
         return lst
 
+    def get_all_items(self):
+        url = f"https://api.finolog.ru/v1/biz/{self.biz_id}/orders/item"
+        params = {
+            "api_token": self.api_token
+        }
+        req = requests.get(url, params=params)
+        json_acceptable_string = req.text.replace("'", "\"")
+        lst = json.loads(json_acceptable_string)
+        return lst
+
+    def add_package_item_by_id(self, package_id, item_id, count, price):
+        url = f"https://api.finolog.ru/v1/biz/{self.biz_id}/orders/package/{package_id}/item"
+        params = {
+            "api_token": self.api_token,
+            "count":count,
+            "price":price,
+            "item_id":item_id
+        }
+        req = requests.post(url, params=params)
+        json_acceptable_string = req.text.replace("'", "\"")
+        lst = json.loads(json_acceptable_string)
+        return lst
+
+    def get_item_by_id(self, id):
+        url = f"https://api.finolog.ru/v1/biz/{self.biz_id}/orders/item/{id}"
+        params = {
+            "api_token": self.api_token,
+        }
+        req = requests.get(url, params=params)
+        json_acceptable_string = req.text.replace("'", "\"")
+        lst = json.loads(json_acceptable_string)
+        return lst
+
+    def update_package_by_id(self, package_id):
+        url = f"https://api.finolog.ru/v1/biz/{self.biz_id}/orders/package/{package_id}"
+        params = {
+            "api_token": self.api_token
+        }
+        req = requests.put(url, params=params)
+        json_acceptable_string = req.text.replace("'", "\"")
+        lst = json.loads(json_acceptable_string)
+        return lst
 
 
 if __name__ == "__main__":
