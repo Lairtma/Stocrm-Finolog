@@ -68,5 +68,4 @@ fin = Finolog("hepV7NAnFgAshnDd90adec7e4d95088359e869f3e4f89e08riNSzPykUqS6fKWN"
 
 
 print(fin.get_order_by_id(410356))
-fin.create_shipment(410356)
 #works_and_parts_value(10892)

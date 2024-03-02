@@ -208,15 +208,8 @@ class Finolog:
         json_acceptable_string = req.text.replace("'", "\"")
         lst = json.loads(json_acceptable_string)
         return lst
-    def create_shipment(self,id):
-        url = f"https://api.finolog.ru/v1/biz/{self.biz_id}/orders/order/{id}/shipments"
-        params = {
-            "api_token": self.api_token,
-        }
-        req = requests.post(url, params=params)
-        json_acceptable_string = req.text.replace("'", "\"")
-        lst = json.loads(json_acceptable_string)
-        return lst
+
+
     def change_order_by_id(self, id,  *args, **kwargs):
         url = f"https://api.finolog.ru/v1/biz/{self.biz_id}/orders/order/{id}"
         params = {
