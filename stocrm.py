@@ -137,7 +137,7 @@ class Stocrm:
 sto = Stocrm("13581_bf2b8cec383601bad6765d4b61240dbd", "v8-centr")
 fin = Finolog("hepV7NAnFgAshnDd90adec7e4d95088359e869f3e4f89e08riNSzPykUqS6fKWN", "43768")
 print(last_x_expenses(5))
-
+print('a')
 if __name__ == "__main__":
     with open("used_id.txt") as fr:
         used_id = fr.readlines()
