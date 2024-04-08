@@ -66,6 +66,7 @@ def works_and_parts_value(deal_id):
         if products_sum != 0:
             fin.change_package_item_by_id(package_id, 153056, count=1, price=products_sum)
     fin.update_package_by_id(package_id)
+
 def last_x_expenses(n):
     lst_n_operations = {'RESPONSE': {}}
     lst = sto.get_expenses_list(1)
@@ -122,6 +123,7 @@ class Stocrm:
         lst = json.loads(json_acceptable_string)
         return lst
 
+
     def get_expenses_list(self, page):
         url = f"https://{self.domain}.stocrm.ru/api/external/v1/finances/expenses?SID={self.api_token}"
         params = {
@@ -136,8 +138,12 @@ class Stocrm:
 
 sto = Stocrm("13581_bf2b8cec383601bad6765d4b61240dbd", "v8-centr")
 fin = Finolog("hepV7NAnFgAshnDd90adec7e4d95088359e869f3e4f89e08riNSzPykUqS6fKWN", "43768")
-print(last_x_expenses(5))
-print('a')
+used_id = []
+
+
+sto = Stocrm("13581_bf2b8cec383601bad6765d4b61240dbd", "v8-centr")
+fin = Finolog("hepV7NAnFgAshnDd90adec7e4d95088359e869f3e4f89e08riNSzPykUqS6fKWN", "43768")
+used_id = []
 if __name__ == "__main__":
     with open("used_id.txt") as fr:
         used_id = fr.readlines()
