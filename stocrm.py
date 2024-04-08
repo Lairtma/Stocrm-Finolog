@@ -67,6 +67,18 @@ def works_and_parts_value(deal_id):
             fin.change_package_item_by_id(package_id, 153056, count=1, price=products_sum)
     fin.update_package_by_id(package_id)
 
+def last_x_expenses(n):
+    lst_n_operations = {'RESPONSE': {}}
+    lst = sto.get_expenses_list(1)
+    total_count = lst['RESPONSE']['TOTAL_COUNT']
+    page = 1
+    while total_count > 1000:
+        total_count -= 1000
+        page += 1
+    lst = sto.get_expenses_list(page)
+    lst_n_operations['RESPONSE']['DATA'] = lst['RESPONSE']['DATA'][-n:]
+    lst_n_operations['RESPONSE']['DATA'].reverse()
+    return lst_n_operations
 
 class Stocrm:
     def __init__(self, api_token, domain):
@@ -110,6 +122,23 @@ class Stocrm:
         json_acceptable_string = req.text.replace("'", "\"")
         lst = json.loads(json_acceptable_string)
         return lst
+
+
+    def get_expenses_list(self, page):
+        url = f"https://{self.domain}.stocrm.ru/api/external/v1/finances/expenses?SID={self.api_token}"
+        params = {
+            "PAGE": page,
+            "LIMIT": 1000
+        }
+        req = requests.get(url, params=params)
+        json_acceptable_string = req.text.replace("'", "\"")
+        lst = json.loads(json_acceptable_string)
+        return lst
+
+
+sto = Stocrm("13581_bf2b8cec383601bad6765d4b61240dbd", "v8-centr")
+fin = Finolog("hepV7NAnFgAshnDd90adec7e4d95088359e869f3e4f89e08riNSzPykUqS6fKWN", "43768")
+used_id = []
 
 
 sto = Stocrm("13581_bf2b8cec383601bad6765d4b61240dbd", "v8-centr")
