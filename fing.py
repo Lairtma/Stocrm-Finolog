@@ -86,6 +86,17 @@ class Finolog:
         lst = json.loads(json_acceptable_string)
         return lst
 
+    def get_contractor_by_inn(self, inn):
+        url = f"https://api.finolog.ru/v1/biz/{self.biz_id}/contractor"
+        params = {
+            "api_token": self.api_token,
+            "inn": inn
+        }
+        req = requests.get(url, params=params)
+        json_acceptable_string = req.text.replace("'", "\"")
+        lst = json.loads(json_acceptable_string)
+        return lst
+
     def create_contractor(self, name, phone, desc):
         url = f"https://api.finolog.ru/v1/biz/{self.biz_id}/contractor"
         params = {
@@ -326,5 +337,5 @@ class Finolog:
 
 if __name__ == "__main__":
     fin = Finolog("hepV7NAnFgAshnDd90adec7e4d95088359e869f3e4f89e08riNSzPykUqS6fKWN", "43768")
-    f = fin.get_order_by_numb(11745)
+    f = fin.get_contractor_by_inn(5044107254)
     print(f)
