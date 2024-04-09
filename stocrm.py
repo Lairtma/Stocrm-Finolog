@@ -7,23 +7,12 @@ from fing import Finolog
 from datetime import datetime, timedelta
 
 
-def filling_order(type, contr_var, deal_id):
-    sto = Stocrm("13581_bf2b8cec383601bad6765d4b61240dbd", "v8-centr")
-    fin = Finolog("hepV7NAnFgAshnDd90adec7e4d95088359e869f3e4f89e08riNSzPykUqS6fKWN", "43768")
-    deal_description = f"По сделке: {deal_id}"
-    new_order = fin.create_order(type)  # создаем новый заказ в finolog
-    get_info_last_order = fin.get_last_order()  # получаем данные последнего созданного заказа
-    last_order_id = get_info_last_order["id"]  # получаем id последнего созданного заказа из данных
-    fin.change_order_by_id(last_order_id, buyer_id=contr_var, description=deal_description, status_id=60244, number=str(deal_id))  # изменяем заказ по id добавляя нужные параметры
-    time.sleep(5)
-
-
 def comparing_deals(sto_id):
     sto = Stocrm("13581_bf2b8cec383601bad6765d4b61240dbd", "v8-centr")
     fin = Finolog("hepV7NAnFgAshnDd90adec7e4d95088359e869f3e4f89e08riNSzPykUqS6fKWN", "43768")
-    orders_list = fin.get_all_orders()
+    orders_list = fin.get_order_by_numb(sto_id)
     for i in orders_list:
-        if i['description'] == f"По сделке: {sto_id}":
+        if i["number"] == str(sto_id):
             return i['id']
 
 
@@ -39,11 +28,22 @@ def order_creation_with_contr_data(deal_id):
         fin.create_contractor(name=deal_data['RESPONSE']['DATA'][0]['CONTACT_TITLE'],
                               phone=deal_data['RESPONSE']['DATA'][0]['CONTACT_PROPERTY_PHONE'], desc=deal_id)
         contr_id = fin.get_contractor_by_phone(deal_data['RESPONSE']['DATA'][0]['CONTACT_PROPERTY_PHONE'])
-        filling_order(type, contr_id, deal_id)
     else: #такой контрагент уже существует
         contr_list_universal = contr_list_7 if not contr_list_8 else contr_list_8
         contr_id = contr_list_universal[0]['id']
-        filling_order(type, contr_id, deal_id)
+
+    deal_description = f"По сделке: {deal_id}"
+    leed = sto.get_leed_by_id(deal_id)["RESPONSE"]["DATA"][0]
+    if leed["OFFER_CUSTOMER_NAME"] == "V8.CENTER":
+        project = {39014: 359147, 32269: 358087}
+    elif leed["OFFER_CUSTOMER_NAME"] == "V8.CENTER Кузовной":
+        project = {39014: 359146, 32269: 353644}
+    elif leed["OFFER_CUSTOMER_NAME"] == "V8.CENTER (ОСАГО)" or leed["OFFER_CUSTOMER_NAME"] == "V8.CENTER (КАСКО)":
+        project = {39014: 345944}
+    else:
+        project = {}
+    fin.create_order(type="out", buyer_id=contr_id, attribute_values=project, description=deal_description,
+                     status_id=60244, number=str(deal_id))  # изменяем заказ по id добавляя нужные параметры
 
 
 def works_and_parts_value(deal_id):
@@ -67,6 +67,7 @@ def works_and_parts_value(deal_id):
             fin.change_package_item_by_id(package_id, 153056, count=1, price=products_sum)
     fin.update_package_by_id(package_id)
 
+
 def last_x_expenses(n):
     lst_n_operations = {'RESPONSE': {}}
     lst = sto.get_expenses_list(1)
@@ -79,6 +80,7 @@ def last_x_expenses(n):
     lst_n_operations['RESPONSE']['DATA'] = lst['RESPONSE']['DATA'][-n:]
     lst_n_operations['RESPONSE']['DATA'].reverse()
     return lst_n_operations
+
 
 class Stocrm:
     def __init__(self, api_token, domain):
@@ -109,6 +111,7 @@ class Stocrm:
         json_acceptable_string = req.text.replace("'", "\"")
         lst = json.loads(json_acceptable_string)
         return lst
+
     def get_works_from_deal_by_id(self, id):
         url = f"https://{self.domain}.stocrm.ru/api/external/v1/work/get_filtered?SID={self.api_token}&FILTER[OFFER_ID]={id}"
         req = requests.get(url)
@@ -123,7 +126,6 @@ class Stocrm:
         lst = json.loads(json_acceptable_string)
         return lst
 
-
     def get_expenses_list(self, page):
         url = f"https://{self.domain}.stocrm.ru/api/external/v1/finances/expenses?SID={self.api_token}"
         params = {
@@ -136,15 +138,16 @@ class Stocrm:
         return lst
 
 
-sto = Stocrm("13581_bf2b8cec383601bad6765d4b61240dbd", "v8-centr")
-fin = Finolog("hepV7NAnFgAshnDd90adec7e4d95088359e869f3e4f89e08riNSzPykUqS6fKWN", "43768")
-used_id = []
 if __name__ == "__main__":
+    sto = Stocrm("13581_bf2b8cec383601bad6765d4b61240dbd", "v8-centr")
+    fin = Finolog("hepV7NAnFgAshnDd90adec7e4d95088359e869f3e4f89e08riNSzPykUqS6fKWN", "43768")
+    used_id = []
     with open("used_id.txt") as fr:
         used_id = fr.readlines()
         for i in range(len(used_id)):
             used_id[i] = used_id[i].replace("\n", "")
     start_time = time.time()
+
     while True:    # основной цикл для повторения раз в 5 минут
         start_time = time.time()
         k = sto.get_dds()["RESPONSE"]["DATA"][::-1]     # получение последних 40 записей из ддс
@@ -177,6 +180,8 @@ if __name__ == "__main__":
                             project = {}
                         res.append("8" + str(leed["CONTACT_PROPERTY_PHONE"][1::]))
                     except Exception as e:
+                        logging.error(res)
+                        logging.error(e)
                         res.append("Error")
                         requests.post(
                             "https://api.telegram.org/bot6923328005:AAFvq9YwSTLQLGbmfLkNZh-EKj7c1nNiEDY/sendMessage?chat_id=792154034&text=1")
@@ -220,6 +225,7 @@ if __name__ == "__main__":
                         project = {}
                     res.append("8" + str(leed["CONTACT_PROPERTY_PHONE"][1::]))
                 except Exception as e:
+                    logging.error(e)
                     res.append("Error")
                     requests.post(
                         "https://api.telegram.org/bot6923328005:AAFvq9YwSTLQLGbmfLkNZh-EKj7c1nNiEDY/sendMessage?chat_id=792154034&text=2")
@@ -334,6 +340,7 @@ if __name__ == "__main__":
                         project = {}
                     res.append("8" + str(leed["CONTACT_PROPERTY_PHONE"][1::]))
                 except Exception:
+                    logging.error(e)
                     res.append("Error")
                 logging.error(res)  # сбор данных об оплате
 
@@ -407,7 +414,7 @@ if __name__ == "__main__":
                     except Exception as e:
                         logging.error(e)
                         logging.error("Error")
-            elif i["COMMENT_HUMAN"] == "Полный возврат" and i["TRANSACTION_TYPE"] == "MOVE" and float(i["CURRENCY_VALUE"]) != 0:
+            elif i["COMMENT_HUMAN"] == "Полный возврат" and i["TRANSACTION_TYPE"] == "MOVE" and float(i["CURRENCY_VALUE"]) != 0 and i["CURRENCY_TYPE"] != 'BANK_CARD':
                 if str(i["ID"]) in used_id:
                     continue
                 used_id.append(str(i["ID"]))
@@ -419,6 +426,7 @@ if __name__ == "__main__":
                     leed = sto.get_leed_by_id(i['FROM_ENTITY_ID'])["RESPONSE"]["DATA"][0]
                     res.append("8" + str(leed["CONTACT_PROPERTY_PHONE"][1::]))
                 except Exception:
+                    logging.error(e)
                     res.append("Error")
                 logging.error(res)   # сбор информации о возврате
                 contractor = fin.get_contractor_by_phone(res[-1])   # получение контрагента в финологе по номеру телефона или создание нового
