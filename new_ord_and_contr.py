@@ -110,5 +110,32 @@ def works_and_parts_value(deal_id):
             fin.change_package_item_by_id(package_id, 153056, count=1, price=products_sum)
     fin.update_package_by_id(package_id)
 
+def expens_creation_n_filling(lst):
+    total = lst['RESPONSE']['DATA'][0]['FULL_COUNT']
+    date = lst['RESPONSE']['DATA'][0]['DATE']
+    name = lst['RESPONSE']['DATA'][0]['EC_COUNTERPARTY_NAME']
+    contr = fin.get_contractor_by_name(name)
+    if contr is not None:
+        id = contr[0]["id"]
+        fin.create_transaction(from_id=170973, date=date, value=-total, type="out", status="regular",
+                               category_id=822319, contractor_id=id)
+    else:
+        fin.create_contractor(name," ", " ")
+        last_c = fin.get_contractor_by_name(name)
+        last_c_id = last_c[0]["id"]
+        fin.create_transaction(from_id=170973, date=date, value=-total, type="out", status="regular",
+                               category_id=822319, contractor_id=last_c_id)
 
-close_all_orders()
+
+
+#project_id = 358087
+#170973
+#68413849
+#'2024-04-04 13:37:16'
+
+sto = Stocrm("13581_bf2b8cec383601bad6765d4b61240dbd", "v8-centr")
+fin = Finolog("hepV7NAnFgAshnDd90adec7e4d95088359e869f3e4f89e08riNSzPykUqS6fKWN", "43768")
+lst = sto.get_expens_by_id(8083353)
+expens_creation_n_filling(lst)
+#print(fin.get_transaction_by_id(68413849))
+#print(fin.get_contractor_by_id(4527430))
